@@ -1,0 +1,5 @@
+FROM eclipse-temurin:17-jdk-jammy
+WORKDIR /customer-service
+COPY target/customer-service-1.0-SNAPSHOT.jar customer-service.jar
+EXPOSE 8081
+ENTRYPOINT ["java", "-jar", "customer-service.jar"]

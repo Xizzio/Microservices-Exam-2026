@@ -1,0 +1,64 @@
+version: '3.8'
+
+services:
+  customer_db:
+    image: postgres:latest
+    container_name: customer_db_container
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: customer_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - ./db_init/customer_db.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d customer_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    
+  customer-service:
+    build:
+      context: ./customer-service
+    container_name: customer-service-container
+    depends_on:
+      customer_db:
+          condition: service_healthy
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://customer_db:5432/customer_db
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: admin
+  
+  inventory_db:
+    image: postgres:latest
+    container_name: inventory_db_container
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: inventory_db
+    ports:
+      - "5436:5432"
+    volumes:
+      - ./db_init/inventory_db.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d inventory_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  inventory-service:
+    build:
+      context: ./inventory-service
+    container_name: inventory-service-container
+    depends_on:
+      inventory_db:
+          condition: service_healthy
+    ports:
+      - "8084:8084"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://inventory_db:5432/inventory_db
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: admin

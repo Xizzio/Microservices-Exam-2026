@@ -1,0 +1,54 @@
+name: Java CI with Maven
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: maven
+
+    - name: Grant execute permission for Maven Wrapper
+      run: chmod +x ./mvnw
+
+    - name: Build with Maven
+      run: ./mvnw -B clean install
+
+    - name: Run tests
+      run: ./mvnw test
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y software-properties-common
+        sudo add-apt-repository ppa:deadsnakes/ppa
+        sudo apt-get update
+        sudo apt-get install -y python3.9 python3.9-venv python3.9-dev
+        sudo apt-get install -y build-essential
+        sudo apt-get install -y libexpat1-dev
+        sudo apt-get install -y bison
+        sudo apt-get install -y flex
+        sudo apt-get install -y graphviz
+
+    - name: Generate dependency snapshot
+      run: ./mvnw dependency:tree -DoutputType=dot -DoutputFile=target/dependency-snapshot.dot
+
+    - name: Convert dependency snapshot to JSON
+      run: dot -Tjson target/dependency-snapshot.dot -o target/dependency-snapshot.json
+
+    - name: Submit dependency snapshot
+      uses: advanced-security/maven-dependency-submission-action@v1
+      with:
+        path: target/dependency-snapshot.json
