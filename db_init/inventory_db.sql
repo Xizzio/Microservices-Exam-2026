@@ -1,11 +1,11 @@
 CREATE TABLE IF NOT EXISTS products (
-    id SERIAL PRIMARY KEY,
-    product_name VARCHAR(50) NOT NULL UNIQUE,
+    id BIGSERIAL PRIMARY KEY,
+    productName VARCHAR(50) NOT NULL UNIQUE,
     quantity INT NOT NULL,
     price DECIMAL(10, 2) NOT NULL
 );
 
-INSERT INTO products (product_name, quantity, price) VALUES 
+INSERT INTO products (productName, quantity, price) VALUES 
 ('fish', 54, 289.00),
 ('meat', 67, 62.00),
 ('cheese', 78, 24.00),

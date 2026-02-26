@@ -1,11 +1,11 @@
 package com.microservices.inventory.model;
 
+import java.math.BigDecimal;
 import jakarta.persistence.*;
 
 @Entity
 @Table(name = "products")
 public class InventoryProduct {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -16,12 +16,12 @@ public class InventoryProduct {
     @Column(nullable = false)
     private int quantity;
 
-    @Column(nullable = false)
-    private double price;
+    @Column(nullable = false, precision = 10, scale = 2)
+    private BigDecimal price;
 
     public InventoryProduct() {}
 
-    public InventoryProduct(String productName, int quantity, double price) {
+    public InventoryProduct(String productName, int quantity, BigDecimal price) {
         this.productName = productName;
         this.quantity = quantity;
         this.price = price;
@@ -48,10 +48,10 @@ public class InventoryProduct {
         this.quantity = quantity;
     }
 
-    public double getPrice() {
+    public BigDecimal getPrice() {
         return price;
     }
-    public void setPrice(double price) {
+    public void setPrice(BigDecimal price) {
         this.price = price;
     }
 }

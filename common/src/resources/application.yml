@@ -1,9 +1,0 @@
-spring:
-  rabbitmq:
-    host: rabbitmq-container
-    port: 5672
-    username: projectuser
-    password: rabbitmqexam
-
-server:
-  port: 8080

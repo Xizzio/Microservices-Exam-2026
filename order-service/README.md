@@ -10,10 +10,6 @@ This is the Order Service part of the microservices architecture and is responsi
 - Communicate with other services (Customer, inventory and Notification) via RabbitMQ
 - Create message for notifiaction service
 
-## Dependencies
+## Openfeign
 
-This module relies on the following dependencies:
-- Spring Boot
-- RabbitMQ
-- PostgreSQL
-- Maven
+Using openfeign since im using Spring Cloud instead of RestTemplate, this is to connect the order to inventory where we will decrease the quantity of product in the inventory_db.

@@ -2,18 +2,10 @@
 
 # Inventory Service
 
-The Inventory Service is a microservice responsible for managing the inventory of products in the shop. It handles operations related to product quantity levels, availability, and inventory product purchase inputs.
+The Inventory Service is a microservice responsible for managing the inventory of products in the shop. It handles operations related to product quantity and adding/removing product inventory.
 
 ## Features
 
 - Update stock quantity with admin user
-- Communicate with other services (Customer and Order) via RabbitMQ
+- Communicate with other services (Customer and Order)
 - View and order product including quantity
-
-## Dependencies
-
-This module relies on the following dependencies:
-- Spring Boot
-- RabbitMQ for messaging
-- PostgreSQL for database management
-- Maven for dependency management

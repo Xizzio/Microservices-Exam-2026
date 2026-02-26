@@ -1,31 +1,52 @@
 package com.microservices.order.service;
 
-import org.springframework.amqp.rabbit.annotation.RabbitListener;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.microservices.order.client.InventoryClient;
+import com.microservices.order.dto.DecreaseStockRequest;
+import com.microservices.order.model.OrderModel;
+import com.microservices.order.repository.OrderRepository;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Service
 public class OrderService {
+    private final OrderRepository orderRepository;
+    private final InventoryClient inventoryClient;
 
-    @Autowired
-    private RabbitTemplate rabbitTemplate;
+    public OrderService(OrderRepository orderRepository, InventoryClient inventoryClient) {
+        this.orderRepository = orderRepository;
+        this.inventoryClient = inventoryClient;
+    }
 
-    @RabbitListener(queues = "orderQueue")
-    public void handleOrder(String orderMessage) {
-        String[] orderDetails = orderMessage.split(",");
-        int customerId = Integer.parseInt(orderDetails[0]);
-        LocalDate orderDate = LocalDate.parse(orderDetails[1]);
-        String productName = orderDetails[2];
-        int quantity = Integer.parseInt(orderDetails[3]);
-        double totalPrice = Double.parseDouble(orderDetails[4]);
+    public OrderModel createOrder(Long customerId, String productName, int quantity, BigDecimal totalPrice) {
 
-        // implement database save logic here for order next
+        boolean stockAvailable = false;
 
-        // Send notification to notification-service via RabbitMQ
-        String notificationMessage = "Your order of " + quantity + " " + productName + " has been placed for a total price of " + totalPrice + " kr. Expected delivery date: " + orderDate.plusDays(2);
-        rabbitTemplate.convertAndSend("notificationQueue", notificationMessage);
+        try {
+            System.out.println("Calling inventory for product: " + productName);
+
+            DecreaseStockRequest request = new DecreaseStockRequest();
+            request.setProductName(productName);
+            request.setQuantity(quantity);
+
+            stockAvailable = inventoryClient.decreaseStock(request);
+            System.out.println("Stock available: " + stockAvailable);
+            
+        } catch (Exception e) {
+            System.out.println("Error calling inventory-service: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        OrderModel order = new OrderModel();
+        order.setCustomerId(customerId);
+        order.setProductName(productName);
+        order.setQuantity(quantity);
+        order.setTotalPrice(totalPrice);
+        order.setOrderDate(LocalDate.now());
+
+        order.setOrderStatus(stockAvailable ? "CONFIRMED" : "FAILED");
+
+        return orderRepository.save(order);
     }
 }

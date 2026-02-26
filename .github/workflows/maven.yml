@@ -13,10 +13,10 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Set up JDK 17
+    - name: Set up JDK 21
       uses: actions/setup-java@v4
       with:
-        java-version: '17'
+        java-version: '21'
         distribution: 'temurin'
         cache: maven
 
@@ -47,8 +47,3 @@ jobs:
 
     - name: Convert dependency snapshot to JSON
       run: dot -Tjson target/dependency-snapshot.dot -o target/dependency-snapshot.json
-
-    - name: Submit dependency snapshot
-      uses: advanced-security/maven-dependency-submission-action@v1
-      with:
-        path: target/dependency-snapshot.json

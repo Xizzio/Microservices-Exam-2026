@@ -3,10 +3,44 @@
 This project is a structured Spring Boot microservice shop application that utilizes PostgreSQL for datastore and RabbitMQ for messaging and communication between services. The architecture consists of four main services: Customer, Order, Notification, and Inventory. Each service is designed to handle specific functionalities and communicate with each other through messaging.
 
 ## Usefull terminal commands
-- mvn clean package
-- docker-compose up --build
-- docker-compose down (add: "-v" for full reset of database schemas)
-- 
+- mvn clean install
+- docker-compose build --no-cache
+- docker-compose up
+- docker-compose down -v ("-v" for full reset of database schemas)
+
+## Postman GET and POST URLs
+### Handeling user customer-service
+- To register a new user: POST http://localhost:8081/api/auth/register
+Body JSON:
+{
+    "email": "test@test.com",
+    "username": "testuser",
+    "password": "testpassword"
+}
+
+- To login to existing user: POST http://localhost:8081/api/auth/login
+Body JSON:
+{
+    "username": "testuser",
+    "password": "testpassword"
+}
+
+### Handeling products inventory-service and order-service
+- add product to inventory database: POST http://localhost:8084/api/products
+Body JSON:
+{
+  "productName": "milk",
+  "quantity": 304,
+  "price": 18.00
+}
+
+- Get the inventory database table: GET http://localhost:8084/api/products
+- Order products: POST http://localhost:8084/api/products/decrease
+Body JSON:
+{
+  "productName": "milk",
+  "quantity": 2
+}
 
 ## Project Structure
 

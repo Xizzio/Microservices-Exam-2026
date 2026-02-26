@@ -17,14 +17,15 @@ public class InventoryService {
     }
 
     @Transactional
-    public boolean decreaseStock(@NonNull Long productId, int quantity) {
-        InventoryProduct product = inventoryRepository.findById(productId).orElseThrow(() -> new RuntimeException("Product not found"));
+    public boolean decreaseStock(String productName, int quantity) {
+        InventoryProduct product = inventoryRepository.findByProductNameIgnoreCase(productName);
 
-        if (product.getQuantity() < quantity) {
-            return false;
-        }
+        if (product == null) return false;
+        if (product.getQuantity() < quantity) return false;
 
         product.setQuantity(product.getQuantity() - quantity);
+        inventoryRepository.save(product);
+
         return true;
     }
 
@@ -37,7 +38,7 @@ public class InventoryService {
     }
 
     public InventoryProduct findByName(String name) {
-        return inventoryRepository.findByProductName(name);
+        return inventoryRepository.findByProductNameIgnoreCase(name);
     }
 
     public InventoryProduct save(@NonNull InventoryProduct product) {
