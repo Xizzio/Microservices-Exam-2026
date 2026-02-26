@@ -9,7 +9,7 @@ This project is a structured Spring Boot microservice shop application that util
 - docker-compose down -v ("-v" for full reset of volumes)
 
 ## Postman GET and POST URLs
-### Handeling user customer-service
+### Handeling user customer-service (register a new user first, then try login)
 - To register a new user: POST http://localhost:8081/api/auth/register
 Body JSON:
 {
@@ -166,6 +166,10 @@ The services communicate with each other using RabbitMQ for asynchronous messagi
 ## Database Configuration
 
 Each service has its own database configuration using PostgreSQL. The initializing SQL files for each service are located in the `root/db_init` directory.
+
+## Docker
+
+When running this project I used Docker.desktop
 
 ## Running the Application
 
