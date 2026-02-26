@@ -6,7 +6,7 @@ This project is a structured Spring Boot microservice shop application that util
 - mvn clean install
 - docker-compose build --no-cache
 - docker-compose up
-- docker-compose down -v ("-v" for full reset of database schemas)
+- docker-compose down -v ("-v" for full reset of volumes)
 
 ## Postman GET and POST URLs
 ### Handeling user customer-service
@@ -52,8 +52,6 @@ webshop-microservices
 │   └── wrapper/
 │       ├── maven-wrapper-0.5.6.jar
 │       └── maven-wrapper.properties
-├── .vscode/
-│   └── settings.json
 ├── common
 │   ├── src/
 │   │   ├── main/
@@ -61,11 +59,7 @@ webshop-microservices
 │   │   │       └── com/
 │   │   │           └── microservices/
 │   │   │               └── common/
-│   │   │                   ├── databaseConfig.java
-│   │   │                   └── rabbitMQConfig.java
 │   │   └── resources/
-│   │       ├── application.properties
-│   │       └── application.yml
 │   ├── pom.xml
 │   └── README.md
 ├── customer-service
@@ -75,15 +69,13 @@ webshop-microservices
 │   │       │   └── com/
 │   │       │       └── microservices/
 │   │       │           └── customer/
-│   │       │               ├── CustomerServiceApplication.java
 │   │       │               ├── controller/
+│   │       │               ├── dto/
 │   │       │               ├── model/
 │   │       │               ├── repository/
-│   │       │               └── service/
+│   │       │               ├── service/
+│   │       │               └── CustomerServiceApplication.java
 │   │       resources/
-│   │       ├── static
-│   │       │   └── login.html
-│   │       ├── application.properties
 │   │       └── application.yml
 │   ├── target/
 │   ├── dockerfile
@@ -101,15 +93,13 @@ webshop-microservices
 │   │       │   └── com/
 │   │       │       └── microservices/
 │   │       │           └── inventory/
-│   │       │               ├── InventoryServiceApplication.java
 │   │       │               ├── controller/
+│   │       │               ├── dto/
 │   │       │               ├── model/
 │   │       │               ├── repository/
-│   │       │               └── service/
+│   │       │               ├── service/
+│   │       │               └── InventoryServiceApplication.java
 │   │       resources/
-│   │       ├── static
-│   │       │   └── inventory.html
-│   │       ├── application.properties
 │   │       └── application.yml
 │   ├── target/
 │   ├── dockerfile
@@ -122,13 +112,12 @@ webshop-microservices
 │   │       │   └── com/
 │   │       │       └── microservices/
 │   │       │           └── notification/
-│   │       │               ├── NotificationServiceApplication.java
 │   │       │               ├── controller/
 │   │       │               ├── model/
 │   │       │               ├── repository/
-│   │       │               └── service/
+│   │       │               ├── service/
+│   │       │               └── NotificationServiceApplication.java
 │   │       resources/
-│   │       ├── application.properties
 │   │       └── application.yml
 │   ├── target/
 │   ├── dockerfile
@@ -141,13 +130,14 @@ webshop-microservices
 │   │       │   └── com/
 │   │       │       └── microservices/
 │   │       │           └── order/
-│   │       │               ├── OrderServiceApplication.java
+│   │       │               ├── client/
 │   │       │               ├── controller/
+│   │       │               ├── dto/
 │   │       │               ├── model/
 │   │       │               ├── repository/
-│   │       │               └── service/
+│   │       │               ├── service/
+│   │       │               └── OrderServiceApplication.java
 │   │       resources/
-│   │       ├── application.properties
 │   │       └── application.yml
 │   ├── target/
 │   ├── dockerfile
@@ -164,8 +154,8 @@ webshop-microservices
 
 ## Services Overview
 
-- **Customer Service**: Manages customer-related operations like, registration and profile login.
-- **Inventory Service**: Manages product inventory, including stock quantity, product details, and inventory stock updates. The customer is also able to select a product and choose the quantity before confirming their order.
+- **Customer Service**: Manages customer-related operations like, registration and login.
+- **Inventory Service**: Manages product inventory, including stock quantity and product add/remove if admin. The customer is also able to POST a product and choose the quantity, the product quantity will update after order is confirmed.
 - **Order Service**: Handles order processing, including order creation and retrieval of order history.
 - **Notification Service**: Sends notifications to customers regarding their orders and stores the customer receipt.
 
@@ -175,17 +165,17 @@ The services communicate with each other using RabbitMQ for asynchronous messagi
 
 ## Database Configuration
 
-Each service has its own database configuration using PostgreSQL. The initializing SQL files for each service are located in the `db_init` directory.
+Each service has its own database configuration using PostgreSQL. The initializing SQL files for each service are located in the `root/db_init` directory.
 
 ## Running the Application
 
-To run the entire application, use Docker Compose to start all services `docker-compose up --build`, including RabbitMQ and PostgreSQL. The `docker-compose.yml` file in the root directory contains the necessary configurations.
+To run the entire application, first open up the terminal like powershell and run `mvn clean install`, then use Docker Compose to start all services `docker-compose up --build`, including RabbitMQ and PostgreSQL. The docker-compose.yml file in the root directory contains the necessary configurations.
 
-If you need to clean up the target files before running `docker-compose up --build` then use the command `./mvnw.cmd clean package`.
+If you need to clean restart before running `docker-compose up --build` then use the command `docker-compose down -v` if docker already was up and had volumes.
 
 ## Getting Started
 
 1. Clone the repository.
 2. Navigate to the project directory.
-3. Run `./mvnw.cmd clean package` to build target files then run `docker-compose up --build` to start all services.
+3. Run `mvn clean install` to build target files then run `docker-compose up --build` to start all services.
 4. If you have Docker Desktop downloaded, you can check out the running services easier.
