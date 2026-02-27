@@ -4,20 +4,21 @@ import com.microservices.customer.dto.LoginRequest;
 import com.microservices.customer.dto.RegisterRequest;
 import com.microservices.customer.model.Customer;
 import com.microservices.customer.repository.CustomerRepository;
+import com.microservices.security.JwtService;
+
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
-import java.util.UUID;
 
 @Service
 public class CustomerService {
     private final CustomerRepository customerRepository;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
-    public CustomerService(CustomerRepository customerRepository, BCryptPasswordEncoder passwordEncoder) {
+    public CustomerService(CustomerRepository customerRepository, BCryptPasswordEncoder passwordEncoder, JwtService jwtService) {
         this.customerRepository = customerRepository;
         this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
     }
 
     public String register(RegisterRequest request) {
@@ -40,18 +41,13 @@ public class CustomerService {
     }
 
     public String login(LoginRequest request) {
-        Optional<Customer> optionalCustomer = customerRepository.findByUsername(request.getUsername());
-
-        if (optionalCustomer.isEmpty()) {
-            return null;
-        }
-
-        Customer customer = optionalCustomer.get();
+        Customer customer = customerRepository.findByUsername(request.getUsername())
+                .orElseThrow(() -> new RuntimeException("Invalid username or password"));
 
         if (!passwordEncoder.matches(request.getPassword(), customer.getPassword())) {
-            return null;
+            throw new RuntimeException("Invalid username or password");
         }
 
-        return UUID.randomUUID().toString();
+        return jwtService.generateToken(customer.getUsername(), customer.getAdmin());
     }
 }

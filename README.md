@@ -58,7 +58,9 @@ webshop-microservices
 │   │   │   └── java/
 │   │   │       └── com/
 │   │   │           └── microservices/
-│   │   │               └── common/
+│   │   │               └── security/
+│   │   │                   ├── JwtAuthenticationFilter.java
+│   │   │                   └── JwtService.java
 │   │   └── resources/
 │   ├── pom.xml
 │   └── README.md
@@ -97,6 +99,7 @@ webshop-microservices
 │   │       │               ├── dto/
 │   │       │               ├── model/
 │   │       │               ├── repository/
+│   │       │               ├── security/
 │   │       │               ├── service/
 │   │       │               └── InventoryServiceApplication.java
 │   │       resources/
@@ -115,6 +118,7 @@ webshop-microservices
 │   │       │               ├── controller/
 │   │       │               ├── model/
 │   │       │               ├── repository/
+│   │       │               ├── security/
 │   │       │               ├── service/
 │   │       │               └── NotificationServiceApplication.java
 │   │       resources/
@@ -135,6 +139,7 @@ webshop-microservices
 │   │       │               ├── dto/
 │   │       │               ├── model/
 │   │       │               ├── repository/
+│   │       │               ├── security/
 │   │       │               ├── service/
 │   │       │               └── OrderServiceApplication.java
 │   │       resources/
@@ -160,6 +165,9 @@ webshop-microservices
 - **Notification Service**: Sends notifications to customers regarding their orders and stores the customer receipt.
 
 ## Communication
+
+We have JWT auth to only give access to the microservices if logged in. There is also role based access with two roles, normal user and admin user.
+Since we are building a microservice, each service validates JWT itself. This means no services trust another service blindly, each service does it's own check.
 
 The services communicate with each other using RabbitMQ for asynchronous messaging. This allows for decoupled service interactions and improved scalability.
 

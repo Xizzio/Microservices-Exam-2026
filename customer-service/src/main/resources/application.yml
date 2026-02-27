@@ -21,3 +21,6 @@ logging:
   level:
     "[org.springframework]": INFO
     java: DEBUG
+
+jwt:
+  secret: 6f8b3d9c2e7a4f1d8c6b9e3a7d2c5f8b6e1a4d9c2e7f3b6a8c1d4e7f9a2b5c6

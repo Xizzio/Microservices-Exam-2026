@@ -1,5 +1,6 @@
 package com.microservices.inventory.service;
 
+import com.microservices.inventory.dto.StockResponse;
 import com.microservices.inventory.model.InventoryProduct;
 import com.microservices.inventory.repository.InventoryRepository;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,16 +18,39 @@ public class InventoryService {
     }
 
     @Transactional
-    public boolean decreaseStock(String productName, int quantity) {
+    public StockResponse decreaseStock(String productName, int quantity) {
         InventoryProduct product = inventoryRepository.findByProductNameIgnoreCase(productName);
 
-        if (product == null) return false;
-        if (product.getQuantity() < quantity) return false;
+        if (product == null) {
+            return new StockResponse(
+                    false,
+                    "Product not found",
+                    productName,
+                    quantity,
+                    0
+            );
+        }
+
+        if (product.getQuantity() < quantity) {
+            return new StockResponse(
+                    false,
+                    "Not enough stock available",
+                    productName,
+                    quantity,
+                    product.getQuantity()
+            );
+        }
 
         product.setQuantity(product.getQuantity() - quantity);
         inventoryRepository.save(product);
 
-        return true;
+        return new StockResponse(
+                true,
+                "Stock successfully reserved",
+                productName,
+                quantity,
+                product.getQuantity()
+        );
     }
 
     public List<InventoryProduct> findAll() {

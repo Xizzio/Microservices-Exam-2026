@@ -3,6 +3,8 @@ package com.microservices.inventory.controller;
 import com.microservices.inventory.model.InventoryProduct;
 import com.microservices.inventory.service.InventoryService;
 import com.microservices.inventory.dto.DecreaseStockRequest;
+import com.microservices.inventory.dto.StockResponse;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.lang.NonNull;
@@ -12,7 +14,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/products")
 public class InventoryController {
-
     private final InventoryService inventoryService;
 
     public InventoryController(InventoryService inventoryService) {
@@ -30,11 +31,19 @@ public class InventoryController {
     }
 
     @PostMapping("/decrease")
-        public boolean decreaseStock(@RequestBody DecreaseStockRequest request) {
-        return inventoryService.decreaseStock(
+    public ResponseEntity<StockResponse> decreaseStock(
+            @RequestBody DecreaseStockRequest request) {
+
+        StockResponse response = inventoryService.decreaseStock(
                 request.getProductName(),
                 request.getQuantity()
         );
+
+        if (!response.isSuccess()) {
+            return ResponseEntity.badRequest().body(response);
+        }
+
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping("/{id}")
